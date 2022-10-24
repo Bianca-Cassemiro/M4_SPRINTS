@@ -76,7 +76,7 @@ int armazena()
 // A função deve retornar duas informações: A primeira é a direção
 // de maior distância ("Direita", "Esquerda", "Frente", "Tras") e a
 // segunda é esta maior distância.
-int posicao()
+int posicao(int)
 {
     int vetor[4], x,i;
     i = 1;
@@ -108,7 +108,20 @@ int posicao()
     }
 // 5 - Faça uma função que pergunta ao usuário se ele deseja continuar o mapeamento e
 // retorna verdadeiro ou falso
-
+int mapeando(){
+    int num;
+    num = 1;
+    while(num == 1){
+    printf("Deseja continuar mapeando? (verdadeiro(1) ou falso(0))\n");
+    scanf("%d",&num);
+    
+    if(num == 1 ){
+        printf("Verdadeiro \n"); 
+    }else{
+          printf("Falso \n");
+}
+}
+}
 // 6 - A função abaixo (que está incompleta) vai "dirigindo" virtualmente um robô
 // e através de 4 sensores em cada um dos 4 pontos do robo ("Direita", "Esquerda",
 // "Frente", "Tras").
@@ -123,23 +136,34 @@ int posicao()
 // enviado pelo usuário.
 //
 //      Complete a função com a chamada das funções já criadas
-// int dirige(int *v,int maxv){
-// 	int maxVetor = maxv;
-// 	int *vetorMov = v;
-// 	int posAtualVetor = 0;
-// 	int dirigindo = 1;
-// 	while(dirigindo){
-// 		int medida = /// .. Chame a função de de leitura da medida para a "Direita"
-// 		medida = converteSensor(medida,0,830);
-// 		posAtualVetor = // Chame a função para armazenar a medida no vetor
-//         ///////////////////////////////////////////////////////////////////////////
-// 		// Repita as chamadas acima para a "Esquerda", "Frente", "Tras"
-// 		// ................
-// 		///////////////////////////////////////////////////////////////////////////
-// 		dirigindo = leComando();
-// 	}
-// 	return posAtualVetor;
-// }
+int dirige(int *v,int maxv){
+	int maxVetor = maxv;
+	int *vetorMov = v;
+	int posAtualVetor = 0;
+	int dirigindo = 1;
+	while(dirigindo){
+		int medida = posicao(10,9,8,7);/// .. Chame a função de de leitura da medida para a "Direita"
+		medida = ajusta(medida,0,830);
+		posAtualVetor = armazena(medida);// Chame a função para armazenar a medida no vetor
+        ///////////////////////////////////////////////////////////////////////////
+		// Repita as chamadas acima para a "Esquerda", "Frente", "Tras"
+		// ................
+		///////////////////////////////////////////////////////////////////////////
+		int medida = posicao(9,8,10,7);/// .. Chame a função de de leitura da medida para a "Direita"
+		medida = ajusta(medida,0,830);
+		posAtualVetor = armazena(medida);
+		dirigindo = leitura();
+		int medida = posicao(9,8,8,10);/// .. Chame a função de de leitura da medida para a "Direita"
+		medida = ajusta(medida,0,830);
+		posAtualVetor = armazena(medida);
+		dirigindo = leitura();
+		int medida = posicao(9,10,8,7);/// .. Chame a função de de leitura da medida para a "Direita"
+		medida = ajusta(medida,0,830);
+		posAtualVetor = armazena(medida);
+		dirigindo = leitura();
+	}
+	return posAtualVetor;
+}
 
 // O trecho abaixo irá utilizar as funções acima para ler os sensores e o movimento
 // do robô e no final percorrer o vetor e mostrar o movimento a cada direção baseado
@@ -154,13 +178,13 @@ int posicao()
 // 	}
 // }
 
-// int main(int argc, char** argv) {
-// 	int maxVetor = 100;
-// 	int vetorMov[maxVetor*4];
-// 	int posAtualVet = 0;
+int main(int argc, char** argv) {
+	int maxVetor = 100;
+	int vetorMov[maxVetor*4];
+	int posAtualVet = 0;
 
-// 	posAtualVet = dirige(vetorMov,maxVetor);
-// 	percorre(vetorMov,posAtualVet);
+	posAtualVet = dirige(vetorMov,maxVetor);
+	percorre(vetorMov,posAtualVet);
 
-// 	return 0;
-// }
+	return 0;
+}
