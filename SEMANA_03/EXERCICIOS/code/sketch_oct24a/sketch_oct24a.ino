@@ -1,26 +1,27 @@
 //porta dos leds
-int led_blue = 10;
-int led_yellow= 3;
-int led_red = 15;
-int led_green = 5;
+int ledAzul = 10;
+int ledAmarelo= 3;
+int ledVermelho = 15;
+int ledVerde = 5;
 //porta dos botões
 int botao1 = 4;
 int botao2 = 1;
+
 //porta do buzzer
 int buzzer = 7;
-//porta do sensor
-int sensor = 17;
-int valorSensor = 0;
 
-int vetorMedidas[100];
+int sensor = 17;
+int sensorLeitura = 0;
+
+int vetor[100];
 int posicaoMedidas = 0;
-int valorBinario[4];
-int notasVetor = 0;
+int binario[4];
+int sons = 0;
 void setup() {
-  pinMode(led_blue, OUTPUT);
-  pinMode(led_yellow, OUTPUT);
-  pinMode(led_red, OUTPUT);
-  pinMode(led_green, OUTPUT);
+  pinMode(ledAzul, OUTPUT);
+  pinMode(ledAmarelo, OUTPUT);
+  pinMode(ledVermelho, OUTPUT);
+  pinMode(ledVerde, OUTPUT);
   pinMode(buzzer, OUTPUT);
   pinMode(botao1, INPUT_PULLUP);
   pinMode(botao2, INPUT_PULLUP);
@@ -29,75 +30,75 @@ void setup() {
 }
 void loop() {
   if (digitalRead(botao1) == LOW) {
-    valorSensor = analogRead(sensor);
-    valorSensor = (valorSensor * 15) / 4095;
-    Serial.print ("Leitura atual do sensor: ");
-    Serial.println(valorSensor);
+    sensorLeitura = analogRead(sensor);
+    sensorLeitura = (sensorLeitura * 15) / 4095;
+    Serial.print ("Valor do sensor: ");
+    Serial.println(sensorLeitura);
     //armazena os valores em um vetor
-    vetorMedidas[posicaoMedidas] = valorSensor;
-    Serial.print ("Valor armazenado no vetor: ");
-    Serial.println(vetorMedidas[posicaoMedidas]);
+    vetor[posicaoMedidas] = sensorLeitura;
+    Serial.print ("Valores do vetor: ");
+    Serial.println(vetor[posicaoMedidas]);
     // função que converte em binário
-    binario(valorBinario, vetorMedidas[posicaoMedidas]);
+    binario(binario, vetor[posicaoMedidas]);
     //mostra nos leds o valor lido
-    acendeLed(valorBinario);
-    tocarBuzzer(vetorMedidas[posicaoMedidas]);
-    apagaLed();
-    // próxima posição livre no vetor
+    ligaLed(binario);
+    somBuzzer(vetor[posicaoMedidas]);
+    ledDesliga();
+
     posicaoMedidas += 1;
-    notasVetor += 1;
+    sons += 1;
   }
-  //botão 2 pressionado
+
   if (digitalRead(botao2) == LOW) {
-    for(int i = 0; i < notasVetor; i++)
+    for(int i = 0; i < sons; i++)
     {
-      // converte em binário todos os valores do vetor
-      binario(valorBinario, vetorMedidas[i]);
-      acendeLed(valorBinario);
-      tocarBuzzer(vetorMedidas[i]);
-      apagaLed();
+     
+      binario(binario, vetor[i]);
+      ligaLed(binario);
+      somBuzzer(vetor[i]);
+      ledDesliga();
     }
-    for(int i = 0; i < notasVetor; i++)
+    for(int i = 0; i < sons; i++)
     {
-      vetorMedidas[i] = 0;
+      vetor[i] = 0;
     }
-    notasVetor = 0;
+    sons = 0;
   }
 }
-void apagaLed(void)
+void ledDesliga(void)
 {
   delay(700);
-  digitalWrite(led_blue, LOW);
-  digitalWrite(led_yellow, LOW);
-  digitalWrite(led_red, LOW);
-  digitalWrite(led_green, LOW);
+  digitalWrite(ledAzul, LOW);
+  digitalWrite(ledAmarelo, LOW);
+  digitalWrite(ledVermelho, LOW);
+  digitalWrite(ledVerde, LOW);
 }
-void acendeLed(int *valorBinario)
-//alterando os estados do led
+void ligaLed(int *binario)
+
 {
-  if (valorBinario[0] == 0) {
-    digitalWrite(led_blue, LOW);
+  if (binario[0] == 0) {
+    digitalWrite(ledAzul, LOW);
   }
   else {
-    digitalWrite(led_blue, HIGH);
+    digitalWrite(ledAzul, HIGH);
   }
-  if (valorBinario[1] == 0) {
-    digitalWrite(led_yellow, LOW);
-  }
-  else {
-    digitalWrite(led_yellow, HIGH);
-  }
-  if (valorBinario[2] == 0) {
-    digitalWrite(led_red, LOW);
+  if (binario[1] == 0) {
+    digitalWrite(ledAmarelo, LOW);
   }
   else {
-    digitalWrite(led_red, HIGH);
+    digitalWrite(ledAmarelo, HIGH);
   }
-  if (valorBinario[3] == 0) {
-    digitalWrite(led_green, LOW);
+  if (binario[2] == 0) {
+    digitalWrite(ledVermelho, LOW);
   }
   else {
-    digitalWrite(led_green, HIGH);
+    digitalWrite(ledVermelho, HIGH);
+  }
+  if (binario[3] == 0) {
+    digitalWrite(ledVerde, LOW);
+  }
+  else {
+    digitalWrite(ledVerde, HIGH);
   }
 }
 void binario(int *vetor, int valor)
@@ -110,9 +111,19 @@ void binario(int *vetor, int valor)
     valor = valor/2;
   }
 }
-void tocarBuzzer(int valorSensor) {
+void somBuzzer(int sensorLeitura) {
   //alterando o tom a cada valor binário
-  switch(valorSensor) {
+  switch(sensorLeitura) {
+void tom(char buzzer, int frequencia, int duracao){
+  float periodo = 1000.0/frequencia; 
+  for (int i = 0; i< duracao/(periodo); i++)
+  {
+    digitalWrite(buzzer, HIGH);
+    delayMicroseconds(periodo*500); 
+    digitalWrite(buzzer, LOW);
+    delayMicroseconds(periodo*500);
+  }
+}
     case 1:
       tom(buzzer, 600, 500);
     break;
@@ -160,15 +171,5 @@ void tocarBuzzer(int valorSensor) {
     break;
     default:
       tom(buzzer, 2100, 500);
-  }
-}
-void tom(char buzzer, int frequencia, int duracao){
-  float periodo = 1000.0/frequencia; 
-  for (int i = 0; i< duracao/(periodo); i++)
-  {
-    digitalWrite(buzzer, HIGH);
-    delayMicroseconds(periodo*500); 
-    digitalWrite(buzzer, LOW);
-    delayMicroseconds(periodo*500);
   }
 }
